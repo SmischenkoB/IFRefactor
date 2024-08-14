@@ -18,7 +18,7 @@ namespace AcemStudios.ApiRefactor
     public class InterfaceWithDatabase : IDataAccessLayer
     {
         private readonly DbContextOptionsBuilder<StudiosDbContext> _optionsBuilder;
-        private readonly string _conn;
+        private readonly IMapper _mapper;
 
         public InterfaceWithDatabase()
         {
@@ -26,24 +26,23 @@ namespace AcemStudios.ApiRefactor
 
             IConfigurationRoot configuration = builder.Build();
 
-            _conn = configuration.GetConnectionString("StudioConnection");
+            var _conn = configuration.GetConnectionString("StudioConnection");
 
             _optionsBuilder = new DbContextOptionsBuilder<StudiosDbContext>();
             _optionsBuilder.UseSqlServer(_conn);
+
+            var config = new MapperConfiguration(cfg =>
+            {
+                cfg.AddProfile<AutoMapperProfile>();
+            });
+
+            _mapper = config.CreateMapper();
         }
 
         public async Task<ServiceResponse<List<GetStudioItemDto>>> AddStudioItem(AddStudioItemDto newStudioItem)
         {
-            _optionsBuilder.UseSqlServer(_conn);
             using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<AutoMapperProfile>();
-                });
-
-                var _mapper = config.CreateMapper();
-
                 StudioItem item = _mapper.Map<StudioItem>(newStudioItem);
                 await _cont.StudioItems.AddAsync(item);
                 await _cont.SaveChangesAsync();
@@ -61,16 +60,8 @@ namespace AcemStudios.ApiRefactor
 
         public async Task<ServiceResponse<List<GetStudioItemHeaderDto>>> GetAllStudioHeaderItems()
         {
-            _optionsBuilder.UseSqlServer(_conn);
             using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<AutoMapperProfile>();
-                });
-
-                var _mapper = config.CreateMapper();
-
                 var serviceResponse = new ServiceResponse<List<GetStudioItemHeaderDto>>
                 {
                     Data = await _cont.StudioItems.Select(c => _mapper.Map<GetStudioItemHeaderDto>(c)).ToListAsync(),
@@ -86,12 +77,6 @@ namespace AcemStudios.ApiRefactor
         {
             using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<AutoMapperProfile>();
-                });
-
-                var _mapper = config.CreateMapper();
                 var item = await _cont.StudioItems
                 .Where(item => item.StudioItemId == id)
                 .Include(type => type.StudioItemType)
@@ -111,15 +96,10 @@ namespace AcemStudios.ApiRefactor
         {
             using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<AutoMapperProfile>();
-                });
                 var serviceResponse = new ServiceResponse<GetStudioItemDto>();
 
                 StudioItem studioItem = await _cont.StudioItems
                     .FirstOrDefaultAsync(c => c.StudioItemId == updatedStudioItem.StudioItemId);
-                var _mapper = config.CreateMapper();
                 try
                 {
                     studioItem.Acquired = updatedStudioItem.Acquired;
@@ -153,12 +133,6 @@ namespace AcemStudios.ApiRefactor
         {
             using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<AutoMapperProfile>();
-                });
-
-                var _mapper = config.CreateMapper();
                 var serviceResponse = new ServiceResponse<List<GetStudioItemDto>>();
 
                 try
@@ -185,12 +159,6 @@ namespace AcemStudios.ApiRefactor
         {
             using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
-                var config = new MapperConfiguration(cfg =>
-                {
-                    cfg.AddProfile<AutoMapperProfile>();
-                });
-
-                var _mapper = config.CreateMapper();
                 var serviceResponse = new ServiceResponse<List<StudioItemType>>
                 {
                     Data = await _cont.StudioItemTypes.OrderBy(s => s.Value).ToListAsync(),
