@@ -4,6 +4,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using AutoMapper;
+using AcmeStudios.ApiRefactor.Interfaces;
 
 namespace AcemStudios.ApiRefactor
 {
@@ -25,20 +26,29 @@ namespace AcemStudios.ApiRefactor
                  .AllowAnyHeader()
                  .AllowAnyMethod()
                  );
+
              });
 
             services.AddControllers();
 
+            services.AddScoped<IDataAccessLayer, InterfaceWithDatabase>();
+            
             services.AddSwaggerGen();
 
-            services.AddAutoMapper(typeof(Startup));
+            services.AddAutoMapper(typeof(Startup));    
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();                
+                app.UseDeveloperExceptionPage();
+
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("v1/swagger.json", "MyAPI V1");
+                });
             }
 
             app.UseStaticFiles();

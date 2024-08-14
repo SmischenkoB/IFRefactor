@@ -2,11 +2,11 @@
 
 namespace AcemStudios.ApiRefactor.Data
 {
-    public class Cont : DbContext
+    public class StudiosDbContext : DbContext
     {
         public DbSet<StudioItem> StudioItems { get; set; }
         public DbSet<StudioItemType> StudioItemTypes { get; set; }
-        public Cont(DbContextOptions<Cont> options) : base(options) { }
+        public StudiosDbContext(DbContextOptions<StudiosDbContext> options) : base(options) { }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

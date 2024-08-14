@@ -1,4 +1,5 @@
 ﻿using AcemStudios.ApiRefactor.DTOs;
+using AcmeStudios.ApiRefactor.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
 
@@ -8,15 +9,15 @@ namespace AcemStudios.ApiRefactor.Controllers
     [ApiController]
     public class AnController : ControllerBase
     {
-        public AnController()
+        private readonly IDataAccessLayer _iwd;
+        public AnController(IDataAccessLayer iwd)
         {
-
+            _iwd = iwd;
         }
 
         [HttpGet("GetAll")]
         public async Task<IActionResult> Get()
         {
-            InterfaceWithDatabase _iwd = new InterfaceWithDatabase();
 
             return Ok(await _iwd.GetAllStudioHeaderItems());
         }
@@ -24,7 +25,6 @@ namespace AcemStudios.ApiRefactor.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            InterfaceWithDatabase _iwd = new InterfaceWithDatabase();
 
             return Ok(await _iwd.GetStudioItemById(id));
         }
@@ -32,7 +32,6 @@ namespace AcemStudios.ApiRefactor.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(AddStudioItemDto studioItem)
         {
-            InterfaceWithDatabase _iwd = new InterfaceWithDatabase();
 
             return Ok(await _iwd.AddStudioItem(studioItem));
         }
@@ -40,7 +39,6 @@ namespace AcemStudios.ApiRefactor.Controllers
         [HttpPut]
         public async Task<IActionResult> Update(UpdateStudioItemDto studioItem)
         {
-            InterfaceWithDatabase _iwd = new InterfaceWithDatabase();
 
             return Ok(await _iwd.UpdateStudioItem(studioItem));
         }
@@ -48,7 +46,6 @@ namespace AcemStudios.ApiRefactor.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            InterfaceWithDatabase _iwd = new InterfaceWithDatabase();
 
             return Ok(await _iwd.DeleteStudioItem(id));
         }
@@ -56,7 +53,6 @@ namespace AcemStudios.ApiRefactor.Controllers
         [HttpGet]
         public async Task<IActionResult> GetStudioItemTypes()
         {
-            InterfaceWithDatabase _iwd = new InterfaceWithDatabase();
 
             return Ok(await _iwd.GetAllStudioItemTypes());
         }

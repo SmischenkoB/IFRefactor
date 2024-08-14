@@ -1,5 +1,6 @@
 ﻿using AcemStudios.ApiRefactor.Data;
 using AcemStudios.ApiRefactor.DTOs;
+using AcmeStudios.ApiRefactor.Interfaces;
 using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -7,32 +8,34 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Configuration;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace AcemStudios.ApiRefactor
 {
-    public class InterfaceWithDatabase
+    public class InterfaceWithDatabase : IDataAccessLayer
     {
+        private readonly DbContextOptionsBuilder<StudiosDbContext> _optionsBuilder;
+        private readonly string _conn;
+
         public InterfaceWithDatabase()
-        {
-
-        }
-
-        public async Task<ServiceResponse<List<GetStudioItemDto>>> AddStudioItem(AddStudioItemDto newStudioItem)
         {
             IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
 
             IConfigurationRoot configuration = builder.Build();
 
-            string conn = configuration.GetConnectionString("StudioConnection");
+            _conn = configuration.GetConnectionString("StudioConnection");
 
-            var optionsBuilder = new DbContextOptionsBuilder<Cont>();
-            optionsBuilder.UseSqlServer(conn);
+            _optionsBuilder = new DbContextOptionsBuilder<StudiosDbContext>();
+            _optionsBuilder.UseSqlServer(_conn);
+        }
 
-
-            using (Cont _cont = new Cont(optionsBuilder.Options))
+        public async Task<ServiceResponse<List<GetStudioItemDto>>> AddStudioItem(AddStudioItemDto newStudioItem)
+        {
+            _optionsBuilder.UseSqlServer(_conn);
+            using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -58,17 +61,8 @@ namespace AcemStudios.ApiRefactor
 
         public async Task<ServiceResponse<List<GetStudioItemHeaderDto>>> GetAllStudioHeaderItems()
         {
-
-            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
-
-            IConfigurationRoot configuration = builder.Build();
-
-            string conn = configuration.GetConnectionString("StudioConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<Cont>();
-            optionsBuilder.UseSqlServer(conn);
-
-            using (Cont _cont = new Cont(optionsBuilder.Options))
+            _optionsBuilder.UseSqlServer(_conn);
+            using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -90,16 +84,7 @@ namespace AcemStudios.ApiRefactor
 
         public async Task<ServiceResponse<GetStudioItemDto>> GetStudioItemById(int id)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
-
-            IConfigurationRoot configuration = builder.Build();
-
-            string conn = configuration.GetConnectionString("StudioConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<Cont>();
-            optionsBuilder.UseSqlServer(conn);
-
-            using (Cont _cont = new Cont(optionsBuilder.Options))
+            using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -124,16 +109,7 @@ namespace AcemStudios.ApiRefactor
 
         public async Task<ServiceResponse<GetStudioItemDto>> UpdateStudioItem(UpdateStudioItemDto updatedStudioItem)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
-
-            IConfigurationRoot configuration = builder.Build();
-
-            string conn = configuration.GetConnectionString("StudioConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<Cont>();
-            optionsBuilder.UseSqlServer(conn);
-
-            using (Cont _cont = new Cont(optionsBuilder.Options))
+            using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -175,16 +151,7 @@ namespace AcemStudios.ApiRefactor
 
         public async Task<ServiceResponse<List<GetStudioItemDto>>> DeleteStudioItem(int id)
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
-
-            IConfigurationRoot configuration = builder.Build();
-
-            string conn = configuration.GetConnectionString("StudioConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<Cont>();
-            optionsBuilder.UseSqlServer(conn);
-
-            using (Cont _cont = new Cont(optionsBuilder.Options))
+            using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
                 var config = new MapperConfiguration(cfg =>
                 {
@@ -216,16 +183,7 @@ namespace AcemStudios.ApiRefactor
 
         public async Task<ServiceResponse<List<StudioItemType>>> GetAllStudioItemTypes()
         {
-            IConfigurationBuilder builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", false, true);
-
-            IConfigurationRoot configuration = builder.Build();
-
-            string conn = configuration.GetConnectionString("StudioConnection");
-
-            var optionsBuilder = new DbContextOptionsBuilder<Cont>();
-            optionsBuilder.UseSqlServer(conn);
-
-            using (Cont _cont = new Cont(optionsBuilder.Options))
+            using (StudiosDbContext _cont = new StudiosDbContext(_optionsBuilder.Options))
             {
                 var config = new MapperConfiguration(cfg =>
                 {
